@@ -18,41 +18,61 @@ network: defaults
 
 tools:
   github:
-    # If in a public repo, setting `lockdown: false` allows
-    # reading issues, pull requests and comments from 3rd-parties
-    # If in a private repo this has no particular effect.
     lockdown: false
-    min-integrity: none # This workflow is allowed to examine and comment on any issues
 
 safe-outputs:
-  mentions: false
-  allowed-github-references: []
   create-issue:
-    title-prefix: "[repo-status] "
-    labels: [report, daily-status]
-    close-older-issues: true
-source: githubnext/agentics/workflows/repo-status.md@1c6668b751c51af8571f01204ceffb19362e0f66
+    title-prefix: "[triage] "
+    labels: [report, triage]
+source: githubnext/agentics/workflows/daily-repo-status.md@d19056381ba48cb1f7c78510c23069701fa7ae87
+engine: copilot
 ---
 
-# Repo Status
+# Daily Triage Report
 
-Create an upbeat daily status report for the repo as a GitHub issue.
+Create a daily triage report for maintainers as a GitHub issue.
+
+## Goals
+
+- Help the triage on-call quickly find what to act on today.
+- Prioritize items (P0/P1/P2) with brief rationale.
+- Keep the report short and actionable.
+
+## Scope / Time window
+
+- Issues/PRs created or updated in the last 24 hours.
+- Stale PRs: no updates for 3+ days.
+- CI failures: workflow runs failed in the last 24 hours (or latest failure per workflow).
 
 ## What to include
 
-- Recent repository activity (issues, PRs, discussions, releases, code changes)
-- Progress tracking, goal reminders and highlights
-- Project status and recommendations
-- Actionable next steps for maintainers
+### P0 (Urgent / likely impacting users or releases)
+
+- CI failures that block main branch or releases
+- Security or outage-related issues (if detected)
+- PRs that are merge-ready but blocked by CI or a critical review
+
+### P1 (Important / should be handled soon)
+
+- Untriaged issues (no labels OR no assignee)
+- Stale PRs (no activity for 3+ days), especially ones close to merge
+- Regressions or bugs with clear reproduction steps
+
+### P2 (Nice to have / backlog grooming)
+
+- Low-severity issues, docs improvements, refactors
+- PRs needing minor follow-ups
+
+## Output format
+
+- Use headings: P0 / P1 / P2
+- Each bullet must include:
+  - Link
+  - One-line summary
+  - Suggested next action (label / assignee / comment / close / request info)
 
 ## Style
 
-- Be positive, encouraging, and helpful 🌟
-- Use emojis moderately for engagement
-- Keep it concise - adjust length based on actual activity
+- Be concise. No fluff.
+- Use emojis sparingly (optional).
 
-## Process
-
-1. Gather recent activity from the repository
-2. Study the repository, its issues and its pull requests
-3. Create a new GitHub issue with your findings and insights
